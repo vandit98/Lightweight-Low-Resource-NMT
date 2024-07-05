@@ -156,8 +156,7 @@ def main():
                 desc="Running tokenizer on prediction dataset",
         )
     
-    # data_collator = DataCollatorForSeq2Seq(tokenizer, model=model, label_pad_token_id = -100)
-    data_collator = DataCollatorForSeq2Seq(tokenizer, model=model, label_pad_token_id=tokenizer.pad_token_id)
+    data_collator = DataCollatorForSeq2Seq(tokenizer, model=model, label_pad_token_id = -100)
     metric = load_metric("sacrebleu")
     
     def postprocess_text(preds, labels):
@@ -169,11 +168,7 @@ def main():
         preds, labels = eval_preds
         if isinstance(preds, tuple):
             preds = preds[0]
-        # if args.ignore_pad_token_for_loss: 
-        # Replace -100 in the labels as we can't decode them. 
-            # labels = np.where(preds != -100, preds, tokenizer.pad_token_id)
         labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
-        
         decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
         decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
@@ -186,8 +181,6 @@ def main():
             writer.write("\n".join(predictions))
         result = {"bleu": result["score"]}
         return result
-    
-
 
     set_seed(training_args.seed)
     trainer = Seq2SeqTrainer(
